@@ -75,12 +75,20 @@ public class ContactMessageController {
             return ResponseEntity.ok(contactMessageService.deleteById(contactMessageId));
             }
 
-                     //not: deleteByIdParam
+                     //not: deleteByIdParam alltakı hocadan bu bnmkı
 
-                @DeleteMapping("/deleteById") //http://localhost:8084/contactMessages/deleteById?contactMessageId=2
-                public ResponseEntity<String> deleteByIdParam(@RequestParam Long contactMessageId){
-                return ResponseEntity.ok(contactMessageService.deleteById(contactMessageId));
+  //             @DeleteMapping("/deleteById") //http://localhost:8084/contactMessages/deleteById?contactMessageId=2
+  //             public ResponseEntity<String> deleteByIdParam(@RequestParam(value = "contactMessageId") Long contactMessageId){
+  //             return ResponseEntity.ok(contactMessageService.deleteById(contactMessageId));
+  // }
+
+
+    // Not: Odev2:deleteByIdParam ********************************************
+    @DeleteMapping("/deleteByIdParam")  //http://localhost:8080/contactMessages/deleteByIdParam?contactMessageId=2
+    public ResponseEntity<String> deleteById(@RequestParam(value = "contactMessageId") Long contactMessageId){
+        return ResponseEntity.ok(contactMessageService.deleteById(contactMessageId)); // servisdeki ayni metod
     }
+
 
 
     }
