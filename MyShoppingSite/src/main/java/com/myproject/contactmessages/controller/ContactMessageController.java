@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
+import java.util.List;
 
 
 @RestController
@@ -57,17 +57,14 @@ public class ContactMessageController {
     // bunu ödev verdi asıl burada yaptığım hali burada kalacak diğer tarafta hocadan aldığımı yapıştıracağım kendi yazdığım
 
 
-    @GetMapping("/searchBySubject")  //http://localhost:8084/contactMessages/searchBySubject + GET
+    @GetMapping("/searchBySubject")// http://localhost:8080/contactMessages/searchBySubject?subject=deneme
     public Page<ContactMessageResponse> searchBySubject(
             @RequestParam(value = "subject") String subject,
             @RequestParam(value = "page",defaultValue = "0") int page,
-            @RequestParam(value = "size",defaultValue = "10") int size ,
+            @RequestParam(value = "size",defaultValue = "10") int size,
             @RequestParam(value = "sort",defaultValue = "dateTime") String sort,
-            @RequestParam(value = "type",defaultValue = "desc") String type
-    ){
-
+            @RequestParam(value = "type", defaultValue = "desc") String type){
         return contactMessageService.searchBySubject(subject,page,size,sort,type);
-
     }
 
             @DeleteMapping("/deleteById/{contactMessageId}") //http://localhost:8084/contactMessages/deleteById/2
@@ -89,6 +86,18 @@ public class ContactMessageController {
         return ResponseEntity.ok(contactMessageService.deleteById(contactMessageId)); // servisdeki ayni metod
     }
 
+
+   @GetMapping("searchBetweenDates")
+
+    public ResponseEntity<List<ContactMessage>> searchBeetwenDates(
+            @RequestParam(value = "beginDate") String beginDateString,
+            @RequestParam(value = "endDate") String endDateString
+    ){
+
+
+     List<ContactMessage> contactMessages = contactMessageService.searchBeetwenDates(beginDateString,endDateString);
+      return ResponseEntity.ok(contactMessages);
+   }
 
 
     }

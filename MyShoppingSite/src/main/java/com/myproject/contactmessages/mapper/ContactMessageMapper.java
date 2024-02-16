@@ -25,6 +25,7 @@ public class ContactMessageMapper {
     public ContactMessageResponse contactMessageToResponse(ContactMessage contactMessage){
 
 
+
         return ContactMessageResponse.builder().
                 name(contactMessage.getContactName())
                 .subject(contactMessage.getMessage())

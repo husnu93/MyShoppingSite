@@ -6,6 +6,7 @@ import com.myproject.contactmessages.entity.ContactMessage;
 import com.myproject.contactmessages.mapper.ContactMessageMapper;
 import com.myproject.contactmessages.messages.Messages;
 import com.myproject.contactmessages.repository.ContactMessageRepository;
+import com.myproject.exception.ConflictException;
 import com.myproject.exception.ResourceNotFoundException;
 import com.myproject.payload.response.business.ResponseMessage;
 import lombok.RequiredArgsConstructor;
@@ -16,14 +17,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class ContactMessageService {
 
+
     private final ContactMessageRepository contactMessageRepository;
-    private ContactMessageMapper contactMessageMapper;
+    private final ContactMessageMapper contactMessageMapper;
     public ResponseMessage<ContactMessageResponse> save(ContactMessageRequest contactMessageRequest) {
 
           //  contactMessageRepository.save(contactMessageRequest);//içerisinde eksik datalar var bunu repo ile kaydedemiyorum burada tür dönüşümü yapmam lazım
@@ -55,22 +60,20 @@ public class ContactMessageService {
         if(Objects.equals(type,"desc")){
             pageable =   PageRequest.of(page,size, Sort.by(sort).descending());
         }
-        return contactMessageRepository.FindByEmailEquals(email , pageable)
+        return contactMessageRepository.findByEmailEquals(email , pageable)
                 .map(contactMessageMapper::contactMessageToResponse);
     }
 
 
     public Page<ContactMessageResponse> searchBySubject(String subject, int page, int size, String sort, String type) {
-        Pageable pageable =  PageRequest.of(page,size, Sort.by(sort).ascending());
 
-        if(Objects.equals(type,"desc")){
-            pageable =   PageRequest.of(page,size, Sort.by(sort).descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
+        if (Objects.equals(type, "desc")) {
+            pageable = PageRequest.of(page, size, Sort.by(sort).descending());
         }
-        return contactMessageRepository.FindBySubject(subject , pageable)
-                .map(contactMessageMapper::contactMessageToResponse);
-
+        return contactMessageRepository.findBySubject(subject, pageable). // Derived
+                map(contactMessageMapper::contactMessageToResponse);
     }
-
     public String deleteById(Long contactMessageId) {
             getContactMessageById(contactMessageId);
             contactMessageRepository.deleteById(contactMessageId);
@@ -81,5 +84,17 @@ public class ContactMessageService {
     public ContactMessage getContactMessageById(Long id){
         return contactMessageRepository.findById(id).orElseThrow(()->
                 new ResourceNotFoundException(Messages.NOT_FOUND_MESSAGE));
+    }
+
+    public List<ContactMessage> searchBeetwenDates(String beginDateString, String endDateString) {
+
+        try {
+            LocalDate beginDate =    LocalDate.parse(beginDateString);
+            LocalDate endDate =    LocalDate.parse(endDateString);
+            return contactMessageRepository.findMessagesBetweenDates(beginDate,endDate);
+        } catch (DateTimeParseException e) {
+            throw new ConflictException(Messages.WRONG_DATE_MESSAGE);
+        }
+
     }
 }
