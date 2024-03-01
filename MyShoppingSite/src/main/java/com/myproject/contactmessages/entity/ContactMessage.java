@@ -22,9 +22,10 @@ import java.time.LocalDateTime;
 @Entity
 public class ContactMessage implements Serializable {
 
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long contactId; // burada hoca id yaptı ama best practice buymuş //
+    private Long contactId;     // burada hoca id yaptı ama best practice buymuş //
 
     @NotNull
     private String contactName;// arkadaki kodlar değişecek findByid ve name değişti yaparken hata alırsın
